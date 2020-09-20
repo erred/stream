@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS repo (
 	remote			TEXT,
 	user_agent		TEXT,
 	referrer		TEXT,
-	enforce			TEXT;
+	enforce			TEXT,
 	blocked_uri		TEXT,
 	source_file		TEXT,
 	document_uri		TEXT,
