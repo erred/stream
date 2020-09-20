@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS repo (
 	path		TEXT,
 	remote		TEXT,
 	user_agent	TEXT,
-	referrer	TEXT,
+	referrer	TEXT
 );`,
 		tableCSP: `
 CREATE TABLE IF NOT EXISTS repo (
