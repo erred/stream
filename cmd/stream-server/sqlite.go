@@ -58,7 +58,7 @@ var (
 
 	sqliteTable = map[Table]string{
 		tableHTTP: `
-CREATE TABLE IF NOT EXISTS repo (
+CREATE TABLE IF NOT EXISTS http (
 	timestamp	TEXT,
 	method		TEXT,
 	domain		TEXT,
@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS repo (
 	referrer	TEXT
 )`,
 		tableCSP: `
-CREATE TABLE IF NOT EXISTS repo (
+CREATE TABLE IF NOT EXISTS csp (
 	timestamp		TEXT,
 	remote			TEXT,
 	user_agent		TEXT,
