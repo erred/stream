@@ -3,25 +3,18 @@ package main
 import (
 	"context"
 	"database/sql"
-	"sync"
 )
 
 type SQLite struct {
 	db *sql.DB
 
-	once map[Table]*sync.Once
 	stmt map[Table]*sql.Stmt
 }
 
 func NewSQLite(dsn string) (*SQLite, error) {
 	s := &SQLite{
-		once: make(map[Table]*sync.Once),
 		stmt: make(map[Table]*sql.Stmt),
 	}
-	for _, t := range sqliteTables {
-		s.once[t] = &sync.Once{}
-	}
-
 	var err error
 	s.db, err = sql.Open("sqlite", dsn)
 	if err != nil {
@@ -31,22 +24,22 @@ func NewSQLite(dsn string) (*SQLite, error) {
 	if err != nil {
 		return nil, err
 	}
+	for _, t := range sqliteTables {
+		_, err := s.db.ExecContext(context.Background(), sqliteTable[t])
+		if err != nil {
+			return nil, err
+		}
+		s.stmt[t], err = s.db.PrepareContext(context.Background(), sqlitePrep[t])
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return s, nil
 }
 
-func (s *SQLite) setup(ctx context.Context, table Table) error {
-	var err error
-	s.once[table].Do(func() {
-		_, err := s.db.ExecContext(ctx, sqliteTable[table])
-		if err != nil {
-			return
-		}
-		s.stmt[table], err = s.db.PrepareContext(ctx, sqlitePrep[table])
-		if err != nil {
-			return
-
-		}
-	})
+func (s *SQLite) insert(ctx context.Context, table Table, args ...interface{}) error {
+	_, err := s.stmt[tableRepo].Exec(args...)
 	return err
 }
 

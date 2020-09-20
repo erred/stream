@@ -89,58 +89,30 @@ func (s *Server) setup(ctx context.Context) error {
 }
 
 func (s *Server) LogHTTP(ctx context.Context, r *stream.HTTPRequest) (*stream.Result, error) {
-	err := s.sqlite.setup(ctx, tableHTTP)
+	err := s.sqlite.insert(ctx, tableHTTP, r.Timestamp, r.Method, r.Domain, r.Path, r.Remote, r.UserAgent, r.Referrer)
 	if err != nil {
-		// TODO: log?
-		return nil, fmt.Errorf("http db init: %w", err)
-	}
-
-	_, err = s.sqlite.stmt[tableHTTP].Exec(r.Timestamp, r.Method, r.Domain, r.Path, r.Remote, r.UserAgent, r.Referrer)
-	if err != nil {
-		// TODO: log?
 		return nil, fmt.Errorf("http db insert: %w", err)
 	}
 	return &stream.Result{}, nil
 }
 func (s *Server) LogBeacon(ctx context.Context, r *stream.BeaconRequest) (*stream.Result, error) {
-	err := s.sqlite.setup(ctx, tableBeacon)
+	err := s.sqlite.insert(ctx, tableCSP, r.DurationMs, r.SrcPage, r.DstPage, r.Remote, r.UserAgent, r.Referrer)
 	if err != nil {
-		// TODO: log?
-		return nil, fmt.Errorf("beacon db init: %w", err)
-	}
-
-	_, err = s.sqlite.stmt[tableBeacon].Exec(r.DurationMs, r.SrcPage, r.DstPage, r.Remote, r.UserAgent, r.Referrer)
-	if err != nil {
-		// TODO: log?
 		return nil, fmt.Errorf("beacon db insert: %w", err)
 	}
 	return &stream.Result{}, nil
 }
 func (s *Server) LogCSP(ctx context.Context, r *stream.CSPRequest) (*stream.Result, error) {
-	err := s.sqlite.setup(ctx, tableCSP)
+	err := s.sqlite.insert(ctx, tableCSP, r.Timestamp, r.Remote, r.UserAgent, r.Referrer, r.Enforce, r.BlockedUri, r.SourceFile, r.DocumentUri, r.ViolatedDirective, r.EffectiveDirective, r.LineNumber, r.StatusCode)
 	if err != nil {
-		// TODO: log?
-		return nil, fmt.Errorf("csp db init: %w", err)
-	}
-
-	_, err = s.sqlite.stmt[tableCSP].Exec(r.Timestamp, r.Remote, r.UserAgent, r.Referrer, r.Enforce, r.BlockedUri, r.SourceFile, r.DocumentUri, r.ViolatedDirective, r.EffectiveDirective, r.LineNumber, r.StatusCode)
-	if err != nil {
-		// TODO: log?
 		return nil, fmt.Errorf("csp db insert: %w", err)
 	}
 	return &stream.Result{}, nil
 }
 
 func (s *Server) LogRepo(ctx context.Context, r *stream.RepoRequest) (*stream.Result, error) {
-	err := s.sqlite.setup(ctx, tableRepo)
+	err := s.sqlite.insert(ctx, tableRepo, r.Timestamp, r.Owner, r.Repo)
 	if err != nil {
-		// TODO: log?
-		return nil, fmt.Errorf("repo db init: %w", err)
-	}
-
-	_, err = s.sqlite.stmt[tableRepo].Exec(r.Timestamp, r.Owner, r.Repo)
-	if err != nil {
-		// TODO: log?
 		return nil, fmt.Errorf("repo db insert: %w", err)
 	}
 	return &stream.Result{}, nil
