@@ -41,7 +41,10 @@ func NewSQLite(dsn string) (*SQLite, error) {
 
 func (s *SQLite) insert(ctx context.Context, table Table, args ...interface{}) error {
 	_, err := s.stmt[table].Exec(args...)
-	return fmt.Errorf("sqlite insert %v: %w", table, err)
+	if err != nil {
+		return fmt.Errorf("sqlite insert %v: %w", table, err)
+	}
+	return nil
 }
 
 type Table int
