@@ -25,14 +25,14 @@ func NewSQLite(dsn string) (*SQLite, error) {
 	if err != nil {
 		return nil, fmt.Errorf("sqlite ping: %w", err)
 	}
-	for _, t := range sqliteTables {
-		_, err := s.db.ExecContext(context.Background(), sqliteTable[t])
+	for _, table := range sqliteTables {
+		_, err := s.db.ExecContext(context.Background(), sqliteTable[table])
 		if err != nil {
-			return nil, fmt.Errorf("create table %v: %w", t, err)
+			return nil, fmt.Errorf("create table %v: %w", table, err)
 		}
-		s.stmt[t], err = s.db.PrepareContext(context.Background(), sqlitePrep[t])
+		s.stmt[table], err = s.db.PrepareContext(context.Background(), sqlitePrep[table])
 		if err != nil {
-			return nil, fmt.Errorf("prepare context %v: %w", t, err)
+			return nil, fmt.Errorf("prepare context %v: %w", table, err)
 		}
 	}
 
@@ -40,7 +40,7 @@ func NewSQLite(dsn string) (*SQLite, error) {
 }
 
 func (s *SQLite) insert(ctx context.Context, table Table, args ...interface{}) error {
-	_, err := s.stmt[tableRepo].Exec(args...)
+	_, err := s.stmt[table].Exec(args...)
 	return fmt.Errorf("sqlite insert %v: %w", table, err)
 }
 

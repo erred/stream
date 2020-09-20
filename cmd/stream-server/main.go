@@ -91,21 +91,27 @@ func (s *Server) setup(ctx context.Context) error {
 func (s *Server) LogHTTP(ctx context.Context, r *stream.HTTPRequest) (*stream.Result, error) {
 	err := s.sqlite.insert(ctx, tableHTTP, r.Timestamp, r.Method, r.Domain, r.Path, r.Remote, r.UserAgent, r.Referrer)
 	if err != nil {
-		return nil, fmt.Errorf("http db insert: %w", err)
+		err = fmt.Errorf("http db insert: %w", err)
+		s.log.Error().Err(err).Str("table", "http").Msg("insert error")
+		return nil, err
 	}
 	return &stream.Result{}, nil
 }
 func (s *Server) LogBeacon(ctx context.Context, r *stream.BeaconRequest) (*stream.Result, error) {
-	err := s.sqlite.insert(ctx, tableCSP, r.DurationMs, r.SrcPage, r.DstPage, r.Remote, r.UserAgent, r.Referrer)
+	err := s.sqlite.insert(ctx, tableBeacon, r.DurationMs, r.SrcPage, r.DstPage, r.Remote, r.UserAgent, r.Referrer)
 	if err != nil {
-		return nil, fmt.Errorf("beacon db insert: %w", err)
+		err = fmt.Errorf("beacon db insert: %w", err)
+		s.log.Error().Err(err).Str("table", "beacon").Msg("insert error")
+		return nil, err
 	}
 	return &stream.Result{}, nil
 }
 func (s *Server) LogCSP(ctx context.Context, r *stream.CSPRequest) (*stream.Result, error) {
 	err := s.sqlite.insert(ctx, tableCSP, r.Timestamp, r.Remote, r.UserAgent, r.Referrer, r.Enforce, r.BlockedUri, r.SourceFile, r.DocumentUri, r.ViolatedDirective, r.EffectiveDirective, r.LineNumber, r.StatusCode)
 	if err != nil {
-		return nil, fmt.Errorf("csp db insert: %w", err)
+		err = fmt.Errorf("csp db insert: %w", err)
+		s.log.Error().Err(err).Str("table", "csp").Msg("insert error")
+		return nil, err
 	}
 	return &stream.Result{}, nil
 }
@@ -113,7 +119,9 @@ func (s *Server) LogCSP(ctx context.Context, r *stream.CSPRequest) (*stream.Resu
 func (s *Server) LogRepo(ctx context.Context, r *stream.RepoRequest) (*stream.Result, error) {
 	err := s.sqlite.insert(ctx, tableRepo, r.Timestamp, r.Owner, r.Repo)
 	if err != nil {
-		return nil, fmt.Errorf("repo db insert: %w", err)
+		err = fmt.Errorf("repo db insert: %w", err)
+		s.log.Error().Err(err).Str("table", "repo").Msg("insert error")
+		return nil, err
 	}
 	return &stream.Result{}, nil
 }
