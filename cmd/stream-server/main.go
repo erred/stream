@@ -64,11 +64,9 @@ func (s *Server) RegisterFlags(fs *flag.FlagSet) {
 
 func (s *Server) setup(ctx context.Context) error {
 	var err error
-	if s.sqliteDSN != "" {
-		s.sqlite, err = NewSQLite(s.sqliteDSN)
-		if err != nil {
-			return err
-		}
+	s.sqlite, err = NewSQLite(s.sqliteDSN)
+	if err != nil {
+		return err
 	}
 	// if s.cockroachDSN != "" {
 	// 	s.crPool, err = pgxpool.Connect(ctx, s.cockroachDSN)
